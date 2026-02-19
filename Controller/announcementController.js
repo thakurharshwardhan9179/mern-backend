@@ -1,4 +1,4 @@
-const Announcement = require("../Model/announcement");
+const Announcement = require("../Model/Announcement");
 
 // ================= CREATE (ADMIN) =================
 const createAnnouncement = async (req, res) => {
