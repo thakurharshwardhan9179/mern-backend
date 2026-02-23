@@ -1,18 +1,33 @@
 const Member = require("../Model/member");
+const User = require("../Model/UserModel");
 
-// ADD MEMBER
+// ================= ADD MEMBER =================
 const addMember = async (req, res) => {
   try {
-    const { userId, phone, plan, fees } = req.body;
+    const { name, email, phone, plan, fees } = req.body;
 
-    if (!userId || !phone || !plan || !fees) {
+    // ✅ validation
+    if (!name || !email || !phone || !plan || !fees) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // 🔍 find or create user
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        password: "123456", // default password
+        role: "member",
+      });
+    }
+
+    // 📅 plan duration
     const planMap = {
       "1 Month": 1,
       "3 Month": 3,
-      "6 Month": 6
+      "6 Month": 6,
     };
 
     const months = planMap[plan];
@@ -21,25 +36,30 @@ const addMember = async (req, res) => {
     }
 
     const joiningDate = new Date();
-    const expiryDate = new Date(joiningDate);
+    const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + months);
 
+    // ✅ create member
     const member = await Member.create({
-      userId,
+      userId: user._id,
       phone,
       plan,
       fees: Number(fees),
       joiningDate,
-      expiryDate
+      expiryDate,
     });
 
-    res.status(201).json(member);
+    res.status(201).json({
+      message: "Member added successfully",
+      member,
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// RENEW MEMBER
+// ================= RENEW MEMBER =================
 const renewMember = async (req, res) => {
   try {
     const { plan, fees } = req.body;
@@ -48,7 +68,7 @@ const renewMember = async (req, res) => {
     const planMap = {
       "1 Month": 1,
       "3 Month": 3,
-      "6 Month": 6
+      "6 Month": 6,
     };
 
     const months = planMap[plan];
@@ -75,26 +95,34 @@ const renewMember = async (req, res) => {
 
     await member.save();
 
-    res.json(member);
+    res.json({
+      message: "Membership renewed",
+      member,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// ADMIN DASHBOARD STATS
+// ================= ADMIN STATS =================
 const getDashboardStats = async (req, res) => {
   try {
     const total = await Member.countDocuments();
     const active = await Member.countDocuments({
-      expiryDate: { $gte: new Date() }
+      expiryDate: { $gte: new Date() },
     });
-    res.json({ total, active, expired: total - active });
+
+    res.json({
+      total,
+      active,
+      expired: total - active,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// MEMBER DASHBOARD
+// ================= MEMBER DASHBOARD =================
 const getMyMembership = async (req, res) => {
   try {
     const member = await Member.findOne({ userId: req.user.id })
@@ -114,5 +142,5 @@ module.exports = {
   addMember,
   renewMember,
   getDashboardStats,
-  getMyMembership
+  getMyMembership,
 };

@@ -12,19 +12,19 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 const { isAdmin } = require("../middleware/adminMiddleware");
 
-// Admin add member
+// ================= ADMIN ADD MEMBER =================
 router.post("/add", protect, isAdmin, addMember);
 
-// Admin renew
+// ================= ADMIN RENEW =================
 router.put("/renew/:id", protect, isAdmin, renewMember);
 
-// Admin stats
+// ================= ADMIN STATS =================
 router.get("/stats", protect, isAdmin, getDashboardStats);
 
-// Logged-in member dashboard
+// ================= MEMBER DASHBOARD =================
 router.get("/my", protect, getMyMembership);
 
-// Admin get all members
+// ================= ADMIN GET ALL MEMBERS =================
 router.get("/", protect, isAdmin, async (req, res) => {
   try {
     const members = await Member.find().populate("userId", "name email");
@@ -34,7 +34,25 @@ router.get("/", protect, isAdmin, async (req, res) => {
   }
 });
 
-// Admin delete
+// ================= ADMIN GET SINGLE MEMBER (⭐ FIX ⭐) =================
+router.get("/:id", protect, isAdmin, async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id).populate(
+      "userId",
+      "name email"
+    );
+
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    res.status(200).json(member);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ================= ADMIN DELETE =================
 router.delete("/:id", protect, isAdmin, async (req, res) => {
   try {
     const member = await Member.findById(req.params.id);
@@ -44,7 +62,6 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
     }
 
     await member.deleteOne();
-
     res.status(200).json({ message: "Member deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
