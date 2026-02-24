@@ -4,26 +4,26 @@ const User = require("../Model/UserModel");
 // ================= ADD MEMBER =================
 const addMember = async (req, res) => {
   try {
-    const { name, email, phone, plan, fees } = req.body;
+    const { userId, phone, plan, fees } = req.body;
 
     // ✅ validation
-    if (!name || !email || !phone || !plan || !fees) {
+    if (!userId || !phone || !plan || !fees) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // 🔍 find or create user
-    let user = await User.findOne({ email });
-
+    // 🔍 check user exists
+    const user = await User.findById(userId);
     if (!user) {
-      user = await User.create({
-        name,
-        email,
-        password: "123456", // default password
-        role: "member",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // 📅 plan duration
+    // ❌ prevent duplicate membership
+    const existingMember = await Member.findOne({ userId });
+    if (existingMember) {
+      return res.status(400).json({ message: "Member already exists" });
+    }
+
+    // 📅 plan duration map
     const planMap = {
       "1 Month": 1,
       "3 Month": 3,
@@ -41,7 +41,7 @@ const addMember = async (req, res) => {
 
     // ✅ create member
     const member = await Member.create({
-      userId: user._id,
+      userId,
       phone,
       plan,
       fees: Number(fees),
