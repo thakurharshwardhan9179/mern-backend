@@ -34,7 +34,8 @@ router.get("/", protect, isAdmin, async (req, res) => {
   }
 });
 
-// ================= ADMIN GET SINGLE MEMBER (⭐ FIX ⭐) =================
+// ⭐⭐⭐ IMPORTANT ⭐⭐⭐
+// GET SINGLE MEMBER SHOULD BE AFTER OTHER ROUTES
 router.get("/:id", protect, isAdmin, async (req, res) => {
   try {
     const member = await Member.findById(req.params.id).populate(
