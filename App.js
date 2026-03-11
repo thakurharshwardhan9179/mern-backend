@@ -1,4 +1,4 @@
-require("dotenv").config();   // 👈 sabse pehle load
+require("dotenv").config(); // 👈 sabse pehle load
 
 const express = require("express");
 const cors = require("cors");
