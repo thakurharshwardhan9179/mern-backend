@@ -7,6 +7,7 @@ require("./Db/Connection");
 
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use("/api/member", require("./routes/memberRoutes"));
 app.use("/api/announcement", require("./routes/announcementRoutes"));
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/payment", paymentRoutes);
-
+app.use("/api", contactRoutes);
 app.get("/", (req, res) => {
 res.send("API is running...");
 });
