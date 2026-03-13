@@ -1,9 +1,7 @@
-require("dotenv").config(); // 👈 sabse pehle load
-
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-
-require("./Db/Connection");
+require("./Db/Connection"); // MongoDB connect
 
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
@@ -22,12 +20,8 @@ app.use("/api/announcement", require("./routes/announcementRoutes"));
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api", contactRoutes);
-app.get("/", (req, res) => {
-res.send("API is running...");
-});
+
+app.get("/", (req, res) => res.send("API is running..."));
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
