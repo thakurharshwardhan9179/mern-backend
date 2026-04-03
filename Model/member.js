@@ -1,74 +1,129 @@
 const mongoose = require("mongoose");
 
+const renewalHistorySchema = new mongoose.Schema(
+  {
+    plan: {
+      type: String,
+      enum: ["1 Month", "3 Month", "6 Month"],
+      required: true,
+    },
+    fees: {
+      type: Number,
+      required: true,
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+    renewedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    paymentId: {
+      type: String,
+      default: "",
+    },
+    orderId: {
+      type: String,
+      default: "",
+    },
+    approvedByAdmin: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { _id: false }
+);
+
 const memberSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
+    },
+
+    goalWeight: {
+      type: Number,
+      default: 0,
     },
 
     phone: {
       type: String,
-      required: true
+      required: true,
     },
 
     plan: {
       type: String,
       enum: ["1 Month", "3 Month", "6 Month"],
-      required: true
+      required: true,
     },
 
     joiningDate: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
 
     expiryDate: {
       type: Date,
-      required: true
+      required: true,
     },
 
     fees: {
       type: Number,
-      required: true
+      required: true,
     },
 
-    // ⭐ FITNESS DATA
+    // FITNESS DATA
     age: {
-      type: Number
+      type: Number,
     },
 
     height: {
-      type: Number
+      type: Number,
     },
 
     weight: {
-      type: Number
+      type: Number,
     },
 
     goal: {
       type: String,
-      enum: ["Weight Loss", "Muscle Gain", "Fitness"]
+      enum: ["Weight Loss", "Muscle Gain", "Fitness"],
     },
 
-    // ⭐ AI RESULT
+    // AI RESULT
     bmi: {
-      type: Number
+      type: Number,
     },
 
     fitnessLevel: {
-      type: String
+      type: String,
     },
 
     workoutSuggestion: {
-      type: String
+      type: String,
     },
 
     dietSuggestion: {
-      type: String
-    }
+      type: String,
+    },
 
+    // RENEWAL SYSTEM
+    renewalStatus: {
+      type: String,
+      enum: ["active", "expiring_soon", "expired", "pending"],
+      default: "active",
+    },
+
+    renewalHistory: {
+      type: [renewalHistorySchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );

@@ -6,6 +6,8 @@ require("./Db/Connection"); // MongoDB connect
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const progressRoutes = require("./routes/progressRoutes");
+
 
 const app = express();
 
@@ -20,6 +22,7 @@ app.use("/api/announcement", require("./routes/announcementRoutes"));
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api", contactRoutes);
+app.use("/api/progress", progressRoutes);
 
 app.get("/", (req, res) => res.send("API is running..."));
 
